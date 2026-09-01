@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O Que a Palavra Tem a Dizer Sobre Você Hoje?</title>
+<style>
+  :root {
+    --bg: #1a140f; --card: #241b14; --line: #3a2d20; --text: #f2e9dc;
+    --muted: #b3a08a; --accent: #d4a13d; --accent2: #8b6b3f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: Georgia, 'Times New Roman', serif;
+    padding: 28px 16px 40px;
+  }
+  .wrap { max-width: 600px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 24px; }
+  .eyebrow { color: var(--accent); font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600; }
+  h1 { font-size: 23px; margin: 8px 0 6px; font-weight: 700; }
+  .sub { color: var(--muted); font-size: 14.5px; }
+  .progress-track { height: 5px; background: var(--line); border-radius: 4px; margin-top: 18px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
+  .qtext { font-size: 18px; line-height: 1.5; margin-bottom: 18px; font-weight: 600; text-align: center; }
+  .option {
+    display: block; width: 100%; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px;
+    margin-bottom: 10px; cursor: pointer; transition: all 0.15s; font-size: 15px; line-height: 1.4;
+    background: transparent; color: var(--text); text-align: left; font-family: inherit;
+  }
+  .option:hover { border-color: var(--accent); background: rgba(212,161,61,0.08); }
+  .start-btn, .restart-btn {
+    display: block; margin: 20px auto 0; background: var(--accent); color: #1a1408;
+    border: none; border-radius: 12px; padding: 14px 32px; font-size: 15px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+  }
+  .intro { text-align: center; }
+  .intro p { color: var(--muted); font-size: 15px; line-height: 1.6; margin-bottom: 20px; }
+  .result { text-align: center; }
+  .result-tag { color: var(--accent); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+  .result-title { font-size: 22px; font-weight: 700; margin-bottom: 16px; }
+  .verse-box {
+    background: rgba(212,161,61,0.08); border: 1px solid var(--accent2);
+    border-radius: 12px; padding: 18px; margin: 16px 0; text-align: left;
+  }
+  .verse-ref { color: var(--accent); font-weight: 700; font-size: 13px; margin-bottom: 8px; }
+  .verse-text { font-style: italic; font-size: 16px; line-height: 1.6; }
+  .reflection { color: var(--muted); font-size: 14.5px; line-height: 1.6; text-align: left; margin-top: 16px; }
+  .parable-box {
+    background: rgba(139,107,63,0.12); border: 1px solid var(--line);
+    border-radius: 12px; padding: 18px; margin-top: 16px; text-align: left;
+  }
+  .parable-title { color: var(--accent); font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+  .parable-text { color: var(--text); font-size: 14.5px; line-height: 1.65; }
+  .social-footer {
+    margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line);
+    text-align: center;
+  }
+  .social-footer p { color: var(--muted); font-size: 13.5px; margin-bottom: 10px; }
+  .social-links { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .social-links a {
+    display: inline-block; padding: 9px 16px; border: 1px solid var(--accent2);
+    border-radius: 20px; color: var(--accent); text-decoration: none; font-size: 13.5px;
+    font-family: -apple-system, sans-serif; font-weight: 600;
+  }
+  .social-links a:hover { background: rgba(212,161,61,0.1); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Você Não Está Só</div>
+    <h1>O Que a Palavra Tem a Dizer Sobre Você Hoje?</h1>
+    <div class="sub" id="subtext">Responda com sinceridade. No final, uma palavra pra esse momento.</div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </header>
+  <div class="card" id="mainCard"></div>
+</div>
+
+<script>
+const phraseBank = {
+  rejeicao: [
+    "Sinto que ninguém realmente me quer por perto",
+    "Tenho medo de ser deixado de lado outra vez",
+    "Acho que nunca sou a primeira escolha de ninguém",
+    "Sinto que decepciono as pessoas que amo",
+    "Tenho a sensação de que não sou suficiente pra ninguém",
+    "Fui magoado por alguém em quem confiava",
+    "Sinto que sou facilmente substituído",
+    "Tenho medo de me abrir e ser rejeitado de novo",
+    "Acho que as pessoas se cansam de mim",
+    "Sinto que não pertenço a lugar nenhum",
+    "Tenho vergonha de pedir ajuda, com medo do 'não'",
+    "Sinto que meu esforço nunca é reconhecido",
+    "Acho que sou invisível pras pessoas ao meu redor",
+    "Tenho medo de amar e não ser amado de volta",
+    "Sinto que fui abandonado nos momentos que mais precisei",
+    "Sinto que sempre fico de fora"
+  ],
+  solidao: [
+    "Sinto um vazio, mesmo cercado de gente",
+    "Sinto que ninguém entende o que passo por dentro",
+    "Passo a maior parte do tempo sozinho, e isso pesa",
+    "Sinto que poderia sumir e poucos notariam",
+    "Sinto falta de alguém que realmente me escute",
+    "Acho difícil me conectar de verdade com as pessoas",
+    "Sinto que carrego meus problemas sem ninguém saber",
+    "Sinto distância até das pessoas mais próximas de mim",
+    "Acho que sou o único que passa por isso",
+    "Sinto que minha rotina é vazia de companhia real",
+    "Sinto que perdi contato com quem eu era",
+    "Acho que ninguém pergunta como eu realmente estou",
+    "Sinto que sou esquecido com facilidade",
+    "Acho que estou isolado até de mim mesmo",
+    "Sinto que preciso fingir estar bem pra não incomodar"
+  ],
+  cansaco: [
+    "Estou exausto, sem saber de onde tirar mais força",
+    "Sinto que carrego peso demais sozinho",
+    "Acordo cansado, mesmo depois de dormir",
+    "Sinto que estou no limite emocional",
+    "Acho que não aguento mais um dia difícil igual a esse",
+    "Sinto que trabalho demais e nunca é suficiente",
+    "Tenho vontade de parar tudo, só descansar",
+    "Sinto que cuido de todo mundo e ninguém cuida de mim",
+    "Acho que perdi a energia que tinha antes",
+    "Sinto que estou sobrecarregado de responsabilidades",
+    "Sinto que meu corpo está pedindo uma pausa que não dou",
+    "Acho que estou funcionando no automático",
+    "Sinto que não tenho mais paciência pra nada",
+    "Sinto que dei tudo de mim e não sobrou nada",
+    "Sinto que estou esgotado de tentar dar conta de tudo"
+  ],
+  ansiedade: [
+    "Sinto o peito apertado sem motivo claro",
+    "Fico pensando no pior antes mesmo de acontecer",
+    "Tenho medo do que ainda está por vir",
+    "Sinto que não consigo parar de me preocupar",
+    "Acho que vivo antecipando problemas que talvez nem aconteçam",
+    "Sinto minha mente acelerada, sem conseguir descansar",
+    "Tenho crises de ansiedade com frequência",
+    "Sinto que perco o controle quando fico nervoso",
+    "Acho que o futuro me assusta mais do que deveria",
+    "Sinto o corpo tenso, mesmo sem motivo aparente",
+    "Tenho dificuldade de dormir por causa dos pensamentos",
+    "Sinto que qualquer imprevisto me desestabiliza",
+    "Acho que vivo em estado de alerta constante",
+    "Tenho medo de decepcionar e isso me consome",
+    "Sinto um aperto no estômago quando penso no amanhã"
+  ],
+  direcao: [
+    "Sinto que não sei que direção tomar na vida",
+    "Acho que fiz tudo certo e mesmo assim deu errado",
+    "Sinto que perdi o rumo de onde eu queria chegar",
+    "Tenho a sensação de estar andando em círculos",
+    "Sinto que minhas escolhas não levaram a lugar nenhum",
+    "Acho que o plano que eu tinha desmoronou",
+    "Sinto que preciso recomeçar, mas não sei por onde",
+    "Tenho medo de tomar a decisão errada de novo",
+    "Sinto que estou estagnado, sem sair do lugar",
+    "Acho que perdi a clareza sobre o que realmente quero",
+    "Sinto que as portas que eu esperava se fecharam",
+    "Tenho dúvidas se estou no caminho certo",
+    "Acho que decepcionei a mim mesmo com os resultados",
+    "Sinto que o tempo está passando e eu não avanço",
+    "Sinto que tudo que tentei não deu certo"
+  ],
+  culpa: [
+    "Sinto culpa por escolhas que fiz no passado",
+    "Tenho dificuldade de me perdoar por erros antigos",
+    "Sinto que não mereço coisas boas por causa do que fiz",
+    "Acho que decepcionei pessoas importantes pra mim",
+    "Sinto vergonha de coisas que fiz ou disse",
+    "Tenho remorso de oportunidades que desperdicei",
+    "Sinto que devo pedir desculpas que nunca dei",
+    "Acho que carrego um peso do meu passado",
+    "Sinto que machuquei pessoas que eu amava",
+    "Tenho dificuldade de esquecer erros que cometi",
+    "Sinto que preciso me redimir de alguma forma",
+    "Acho que fico repetindo os mesmos erros",
+    "Sinto que não consigo seguir em frente por causa da culpa",
+    "Sinto que preciso de um recomeço que não sei se mereço",
+    "Sinto peso por palavras que não deveria ter dito"
+  ]
+};
+
+const promptStems = [
+  "Como você diria que está seu coração hoje?",
+  "Quando você fica sozinho com seus pensamentos, o que mais aparece?",
+  "O que mais pesa em você nas últimas semanas?",
+  "Se alguém perguntasse 'como você está de verdade', o que você responderia?",
+  "O que você mais precisa ouvir agora?",
+  "O que ronda sua mente antes de dormir?",
+  "Se você pudesse desabafar sem julgamento, o que diria?",
+  "O que descreve melhor o seu momento atual?",
+  "Qual dessas frases mais parece com o que você sente hoje?",
+  "O que você sente que ninguém enxerga em você?"
+];
+
+const results = {
+  rejeicao: {
+    title: "Você tem sentido o peso da rejeição",
+    ref: "Salmos 27, versículo 1",
+    verse: "\"O Senhor é a minha luz e a minha salvação; a quem temerei? O Senhor é a força da minha vida; de quem me recearei?\"",
+    reflection: "Mesmo quando pessoas te decepcionam ou te deixam de lado, isso não define o seu valor. Deus não te vê como quem te rejeitou te viu.",
+    parableTitle: "A história do filho que voltou",
+    parable: "Um filho pegou sua parte da herança, foi embora e perdeu tudo. Quando não tinha mais nada, decidiu voltar pra casa, se sentindo indigno até de ser chamado de filho outra vez. Mas o pai, ao vê-lo ainda de longe, correu até ele, abraçou e fez uma festa — antes mesmo de o filho terminar o pedido de desculpas. A rejeição que ele esperava nunca chegou; só encontrou acolhida."
+  },
+  solidao: {
+    title: "Você tem se sentido só, mesmo cercado de gente",
+    ref: "Salmos 139, versículo 1",
+    verse: "\"Senhor, tu me sondas e me conheces.\"",
+    reflection: "Existe uma diferença entre estar sozinho e ser esquecido. Você é profundamente conhecido — cada pensamento, cada canto do seu dia.",
+    parableTitle: "A história da ovelha que se perdeu",
+    parable: "Um pastor tinha cem ovelhas. Quando percebeu que uma tinha se perdido do grupo, deixou as noventa e nove seguras e foi procurar só aquela — até encontrar. Não foi por ela ser mais importante que as outras, mas porque nenhuma fica de fora da atenção dele. Ele não espera a ovelha voltar sozinha; ele vai atrás dela."
+  },
+  cansaco: {
+    title: "Você está carregando mais do que devia sozinho",
+    ref: "Mateus 11, versículo 28",
+    verse: "\"Vinde a mim, todos os que estais cansados e sobrecarregados, e eu vos aliviarei.\"",
+    reflection: "Cansaço prolongado não é fraqueza, é sinal de que você tem carregado peso demais por conta própria. Existe convite pra descanso real.",
+    parableTitle: "A história das duas irmãs",
+    parable: "Marta se ocupava correndo de um lado pro outro, tentando dar conta de tudo sozinha, enquanto sua irmã Maria simplesmente parou pra sentar e descansar. Marta reclamou, cobrando ajuda. Mas a resposta que ouviu não foi 'trabalhe mais' — foi que ela estava ansiosa e afobada com tantas coisas, quando só uma era realmente necessária naquele momento: parar."
+  },
+  ansiedade: {
+    title: "A ansiedade tem tomado mais espaço do que deveria",
+    ref: "Filipenses 4, versículo 6",
+    verse: "\"Não andeis ansiosos por coisa alguma; antes, em tudo, sejam conhecidas, diante de Deus, as vossas petições, pela oração e súplica, com ação de graças.\"",
+    reflection: "A ansiedade mente dizendo que você precisa resolver tudo sozinho e agora. Existe espaço pra entregar essa preocupação, um pouco de cada vez.",
+    parableTitle: "A lição dos lírios do campo",
+    parable: "Olhando pras flores do campo, foi dito que elas não trabalham nem se preocupam com o amanhã, e mesmo assim são vestidas com mais beleza do que qualquer rei já teve. Se até uma flor que dura poucos dias recebe esse cuidado, o argumento segue: por que se afligir tanto pelo que ainda vai vir?"
+  },
+  direcao: {
+    title: "Você sente que está sem rumo, ou que algo deu errado",
+    ref: "Isaías 40, versículo 1",
+    verse: "\"Consolai, consolai o meu povo, diz o vosso Deus.\"",
+    reflection: "Quando parece que o tempo difícil não tem fim, essa é uma promessa de que existe alívio vindo — mesmo que ainda não pareça.",
+    parableTitle: "A história de José",
+    parable: "Vendido pelos próprios irmãos, acusado injustamente e esquecido na prisão por anos, José via sua vida desmoronar sem nenhuma lógica aparente. Anos depois, no lugar mais inesperado possível — governando o Egito — ele entendeu que tudo aquilo, que parecia só desgraça, tinha um propósito maior que ele não conseguia enxergar no meio da tempestade."
+  },
+  culpa: {
+    title: "Um peso de culpa ou arrependimento tem te acompanhado",
+    ref: "Salmos 51, versículo 1",
+    verse: "\"Tem misericórdia de mim, ó Deus, segundo a tua benignidade; apaga as minhas transgressões, segundo a multidão das tuas misericórdias.\"",
+    reflection: "Culpa que já foi entregue não precisa continuar sendo carregada. Existe espaço real pra recomeço, não só pra quem 'merece'.",
+    parableTitle: "A mulher que esperava ser condenada",
+    parable: "Uma mulher foi arrastada até uma praça pública, exposta por um erro que ela mesma reconhecia. Uma multidão já estava pronta pra julgá-la. Mas a única pessoa com autoridade real pra condená-la disse apenas: 'quem nunca errou, que atire a primeira pedra' — e, um por um, todos foram embora. No fim, restaram só os dois: ela, e a ausência de qualquer condenação."
+  }
+};
+
+const categories = Object.keys(phraseBank);
+let round = [];
+let currentQ = 0;
+let scores = {};
+
+const mainCard = document.getElementById('mainCard');
+const progressFill = document.getElementById('progressFill');
+const subtext = document.getElementById('subtext');
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function generateRound() {
+  const prompts = shuffle(promptStems).slice(0, 5);
+  const pools = {};
+  categories.forEach(cat => { pools[cat] = shuffle(phraseBank[cat]); });
+  const used = {}; categories.forEach(cat => used[cat] = 0);
+
+  round = prompts.map(prompt => {
+    const cats = shuffle(categories).slice(0, 4);
+    const options = cats.map(cat => {
+      const phrase = pools[cat][used[cat] % pools[cat].length];
+      used[cat]++;
+      return { text: phrase, tag: cat };
+    });
+    return { q: prompt, options: shuffle(options) };
+  });
+}
+
+function renderIntro() {
+  mainCard.innerHTML = `
+    <div class="intro">
+      <p>Não é um teste de conhecimento. É um espaço de 1 minuto pra você parar e ouvir uma palavra que combina com o que está sentindo agora.</p>
+      <button class="start-btn" id="startBtn">Começar</button>
+    </div>
+  `;
+  document.getElementById('startBtn').addEventListener('click', () => {
+    generateRound();
+    currentQ = 0;
+    scores = {};
+    renderQuestion();
+  });
+}
+
+function renderQuestion() {
+  progressFill.style.width = (currentQ / round.length * 100) + '%';
+  const item = round[currentQ];
+  mainCard.innerHTML = `
+    <div class="qtext">${item.q}</div>
+    ${item.options.map(opt => `<button class="option" data-tag="${opt.tag}">${opt.text}</button>`).join('')}
+  `;
+  document.querySelectorAll('.option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tag = btn.dataset.tag;
+      scores[tag] = (scores[tag] || 0) + 1;
+      currentQ++;
+      if (currentQ < round.length) {
+        renderQuestion();
+      } else {
+        renderResult();
+      }
+    });
+  });
+}
+
+function renderResult() {
+  progressFill.style.width = '100%';
+  subtext.textContent = "Aqui está a palavra pra esse momento.";
+  const topTag = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+  const r = results[topTag];
+  mainCard.innerHTML = `
+    <div class="result">
+      <div class="result-tag">Uma palavra pra você</div>
+      <div class="result-title">${r.title}</div>
+      <div class="verse-box">
+        <div class="verse-ref">${r.ref}</div>
+        <div class="verse-text">${r.verse}</div>
+      </div>
+      <div class="reflection">${r.reflection}</div>
+      <div class="parable-box">
+        <div class="parable-title">📖 ${r.parableTitle}</div>
+        <div class="parable-text">${r.parable}</div>
+      </div>
+      <button class="restart-btn" id="restartBtn">Responder novamente</button>
+      <div class="social-footer">
+        <p>Se inscreve, compartilha e me segue no TikTok. Você não está só!</p>
+        <div class="social-links">
+          <a href="https://www.tiktok.com/@voce_nao_esta_so_30" target="_blank" rel="noopener">TikTok</a>
+          <a href="https://www.youtube.com/channel/UCA74XzN6emDwCPWF-XPDoxw" target="_blank" rel="noopener">YouTube</a>
+          <a href="https://vocenaoestaso-maker.github.io/voce-nao-esta-so" target="_blank" rel="noopener">Link na Bio</a>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('restartBtn').addEventListener('click', () => {
+    generateRound();
+    currentQ = 0;
+    scores = {};
+    subtext.textContent = "Responda com sinceridade. No final, uma palavra pra esse momento.";
+    renderQuestion();
+  });
+}
+
+renderIntro();
+</script>
+</body>
+</html>
