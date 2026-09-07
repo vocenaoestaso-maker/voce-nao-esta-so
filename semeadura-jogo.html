@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toda Escolha É Uma Semente</title>
+<style>
+  :root {
+    --bg: #1a140f; --card: #241b14; --line: #3a2d20; --text: #f2e9dc;
+    --muted: #b3a08a; --accent: #d4a13d; --accent2: #8b6b3f;
+    --bad: #c15b4a; --good: #5a9b6f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: Georgia, 'Times New Roman', serif;
+    padding: 28px 16px 40px;
+  }
+  .wrap { max-width: 600px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 24px; }
+  .eyebrow { color: var(--accent); font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600; }
+  h1 { font-size: 23px; margin: 8px 0 6px; font-weight: 700; }
+  .sub { color: var(--muted); font-size: 14.5px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
+  .scenario { font-size: 18px; line-height: 1.55; margin-bottom: 22px; text-align: center; font-weight: 600; }
+  .choices { display: flex; flex-direction: column; gap: 12px; }
+  .choice-btn {
+    padding: 16px; border-radius: 12px; font-size: 15px; font-family: inherit;
+    cursor: pointer; text-align: left; line-height: 1.4; border: 1px solid var(--line);
+    background: transparent; color: var(--text);
+  }
+  .choice-btn.bad:hover { border-color: var(--bad); background: rgba(193,91,74,0.08); }
+  .choice-btn.good:hover { border-color: var(--good); background: rgba(90,155,111,0.08); }
+  .start-btn, .restart-btn {
+    display: block; margin: 20px auto 0; background: var(--accent); color: #1a1408;
+    border: none; border-radius: 12px; padding: 14px 32px; font-size: 15px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+  }
+  .intro { text-align: center; }
+  .intro p { color: var(--muted); font-size: 15px; line-height: 1.6; margin-bottom: 20px; }
+  .result-tag { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; text-align: center; }
+  .result-tag.bad { color: var(--bad); }
+  .result-tag.good { color: var(--good); }
+  .consequence { font-size: 15.5px; line-height: 1.6; text-align: center; margin-bottom: 18px; font-style: italic; }
+  .verse-box {
+    background: rgba(212,161,61,0.08); border: 1px solid var(--accent2);
+    border-radius: 12px; padding: 18px; margin: 16px 0; text-align: left;
+  }
+  .verse-ref { color: var(--accent); font-weight: 700; font-size: 13px; margin-bottom: 8px; }
+  .verse-text { font-style: italic; font-size: 16px; line-height: 1.6; }
+  .reflection { color: var(--muted); font-size: 14.5px; line-height: 1.6; text-align: left; margin-top: 16px; }
+  .social-footer { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); text-align: center; }
+  .social-footer p { color: var(--muted); font-size: 13.5px; margin-bottom: 10px; }
+  .social-links { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .social-links a {
+    display: inline-block; padding: 9px 16px; border: 1px solid var(--accent2);
+    border-radius: 20px; color: var(--accent); text-decoration: none; font-size: 13.5px;
+    font-family: -apple-system, sans-serif; font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Você Não Está Só</div>
+    <h1>Toda Escolha É Uma Semente</h1>
+    <div class="sub" id="subtext">O que você planta hoje, colhe amanhã. Escolha com sinceridade.</div>
+  </header>
+  <div class="card" id="mainCard"></div>
+</div>
+
+<script>
+const scenarios = [
+  {
+    situation: "Alguém te ofende injustamente na frente de outras pessoas. O que você faz?",
+    bad: {
+      label: "Revido na mesma hora, grito de volta",
+      consequence: "Você revidou. A discussão cresceu, e a paz que você tinha foi embora junto com as palavras ditas.",
+      ref: "Efésios 4, versículos 26-27",
+      verse: "\"Quando vocês ficarem irados, não pequem. Apaguem a sua ira antes que o sol se ponha, e não deem lugar ao Diabo.\""
+    },
+    good: {
+      label: "Respiro fundo e escolho não responder no calor do momento",
+      consequence: "Você segurou a língua. A raiva ainda doeu, mas não virou incêndio — e amanhã você ainda vai poder olhar essa pessoa nos olhos.",
+      ref: "Tiago 1, versículo 19",
+      verse: "\"Seja todo homem pronto para ouvir, tardio para falar, tardio para se irar.\""
+    }
+  },
+  {
+    situation: "Você recebeu uma notícia ruim e o medo toma conta. O que você faz?",
+    bad: {
+      label: "Me isolo e tento resolver tudo sozinho, sem falar com ninguém",
+      consequence: "Sozinho, o medo cresceu no silêncio. A noite ficou mais longa do que precisava ser.",
+      ref: "Eclesiastes 4, versículo 10",
+      verse: "\"Porque se caírem, um levanta o companheiro; mas ai do que estiver só quando cair, pois não haverá outro que o levante.\""
+    },
+    good: {
+      label: "Oro e divido esse medo com alguém de confiança",
+      consequence: "Compartilhar não fez o problema sumir, mas o peso ficou mais leve — e você lembrou que não estava sozinho.",
+      ref: "Isaías 41, versículo 10",
+      verse: "\"Não tenha medo, pois eu estou com você; não fique ansioso, pois eu sou o seu Deus.\""
+    }
+  },
+  {
+    situation: "Você tem uma decisão importante pra tomar e a ansiedade aperta o peito. O que você faz?",
+    bad: {
+      label: "Tento controlar cada detalhe sozinho, sem descansar até resolver tudo",
+      consequence: "Quanto mais você apertava o controle, mais a ansiedade crescia. O cansaço chegou antes da resposta.",
+      ref: "Mateus 6, versículo 27",
+      verse: "\"Quem de vós, por mais ansioso que esteja, pode acrescentar um côvado a sua estatura?\""
+    },
+    good: {
+      label: "Entrego essa preocupação em oração e sigo um passo de cada vez",
+      consequence: "Você não teve todas as respostas na hora, mas a paz voltou antes da solução.",
+      ref: "Filipenses 4, versículo 6",
+      verse: "\"Não andeis ansiosos por coisa alguma; antes, em tudo, sejam conhecidas, diante de Deus, as vossas petições.\""
+    }
+  },
+  {
+    situation: "Alguém que você amava te deixou de lado. O que você faz?",
+    bad: {
+      label: "Guardo mágoa e decido nunca mais confiar em ninguém",
+      consequence: "O muro que você construiu te protegeu da dor — e também te isolou de quem realmente queria ficar.",
+      ref: "Hebreus 12, versículo 15",
+      verse: "\"Que nenhuma raiz de amargura, brotando, vos perturbe, e por ela muitos sejam contaminados.\""
+    },
+    good: {
+      label: "Levo essa dor a Deus e continuo aberto a amar de novo",
+      consequence: "Doeu, mas você não fechou o coração. E isso preservou algo maior que a mágoa.",
+      ref: "Salmos 27, versículo 10",
+      verse: "\"Se meu pai e minha mãe me abandonarem, ainda assim o Senhor me acolherá.\""
+    }
+  },
+  {
+    situation: "Você cometeu um erro sério e a culpa pesa. O que você faz?",
+    bad: {
+      label: "Escondo o que fiz e finjo que está tudo bem",
+      consequence: "O segredo pesou mais que o erro em si. Fingir bem-estar consumiu a energia que sobrava.",
+      ref: "Provérbios 28, versículo 13",
+      verse: "\"Quem encobre as suas transgressões nunca prosperará; mas o que as confessa e deixa alcançará misericórdia.\""
+    },
+    good: {
+      label: "Reconheço o erro e peço perdão a Deus e a quem magoei",
+      consequence: "Foi difícil admitir, mas o peso começou a sair no momento em que você parou de esconder.",
+      ref: "Salmos 51, versículo 10",
+      verse: "\"Cria em mim, ó Deus, um coração puro, e renova em mim um espírito reto.\""
+    }
+  },
+  {
+    situation: "Você está exausto, mas ainda tem mais uma tarefa pela frente. O que você faz?",
+    bad: {
+      label: "Ignoro meu limite e continuo empurrando mais um pouco",
+      consequence: "Você seguiu em frente, mas o corpo cobrou a conta depois — o cansaço não desapareceu, só foi adiado.",
+      ref: "Marcos 6, versículo 31",
+      verse: "\"Vinde vós à parte a um lugar deserto, e repousai um pouco.\""
+    },
+    good: {
+      label: "Paro, descanso, e confio que amanhã terei forças de novo",
+      consequence: "Descansar não foi fraqueza — foi o que te permitiu continuar de verdade.",
+      ref: "Mateus 11, versículo 28",
+      verse: "\"Vinde a mim, todos os que estais cansados e sobrecarregados, e eu vos aliviarei.\""
+    }
+  },
+  {
+    situation: "Você foi tratado de forma injusta por alguém com poder sobre você. O que faz?",
+    bad: {
+      label: "Guardo isso e planejo uma forma de revidar quando puder",
+      consequence: "Você esperou a hora de revidar, e a injustiça que sofreu virou uma que você mesmo cometeu depois.",
+      ref: "Romanos 12, versículo 19",
+      verse: "\"Não vos vingueis a vós mesmos, amados, mas dai lugar à ira de Deus; porque está escrito: Minha é a vingança, eu retribuirei, diz o Senhor.\""
+    },
+    good: {
+      label: "Entrego a situação a Deus e sigo agindo com integridade",
+      consequence: "A injustiça doeu, mas você não deixou ela definir quem você é.",
+      ref: "1 Pedro 2, versículo 23",
+      verse: "\"Quando o insultavam, não revidava com insultos... mas se entregava àquele que julga com justiça.\""
+    }
+  },
+  {
+    situation: "Uma mágoa antiga ainda dói quando você lembra. O que faz?",
+    bad: {
+      label: "Reabro a ferida toda vez que penso nela, revivendo a dor",
+      consequence: "Cada vez que você reabria a ferida, ela demorava mais pra cicatrizar.",
+      ref: "Provérbios 4, versículo 23",
+      verse: "\"Sobre tudo o que se deve guardar, guarda o teu coração, porque dele procedem as fontes da vida.\""
+    },
+    good: {
+      label: "Entrego essa dor a Deus e permito que Ele cuide da cicatriz",
+      consequence: "A memória ainda existe, mas perdeu o poder de te paralisar.",
+      ref: "Salmos 147, versículo 3",
+      verse: "\"Ele cura os que têm o coração quebrantado e cuida das suas feridas.\""
+    }
+  },
+  {
+    situation: "Nada do que você tentou deu certo ultimamente. O que faz?",
+    bad: {
+      label: "Desisto e decido que não vale mais a pena tentar",
+      consequence: "Parar aliviou por um dia, mas o vazio de não tentar mais doeu bem mais que o fracasso.",
+      ref: "Gálatas 6, versículo 9",
+      verse: "\"E não nos cansemos de fazer o bem, pois a seu tempo colheremos, se não desfalecermos.\""
+    },
+    good: {
+      label: "Descanso um pouco, mas decido tentar de novo amanhã",
+      consequence: "Você não teve resposta na hora, mas manteve a porta aberta pro amanhã.",
+      ref: "Isaías 40, versículo 1",
+      verse: "\"Consolai, consolai o meu povo, diz o vosso Deus.\""
+    }
+  },
+  {
+    situation: "Você se sente sozinho, mesmo cercado de gente. O que faz?",
+    bad: {
+      label: "Me fecho ainda mais, achando que ninguém entenderia",
+      consequence: "O silêncio que você escolheu virou uma prisão maior que a solidão em si.",
+      ref: "Gênesis 2, versículo 18",
+      verse: "\"Não é bom que o homem esteja só.\""
+    },
+    good: {
+      label: "Busco a Deus em oração e tento me abrir com uma pessoa de confiança",
+      consequence: "Não foi fácil abrir o coração, mas a solidão perdeu força quando você se permitiu ser visto.",
+      ref: "Salmos 139, versículo 1",
+      verse: "\"Senhor, tu me sondas e me conheces.\""
+    }
+  },
+  {
+    situation: "Uma oportunidade errada aparece, fácil e tentadora. O que faz?",
+    bad: {
+      label: "Aproveito, já que ninguém vai saber",
+      consequence: "Ninguém mais soube, mas você soube. E isso pesou mais do que imaginava.",
+      ref: "1 Coríntios 10, versículo 13",
+      verse: "\"Deus... com a tentação dará também o escape, para que a possais suportar.\""
+    },
+    good: {
+      label: "Recuso, mesmo sendo difícil, porque sei o que é certo",
+      consequence: "Foi difícil dizer não, mas você dormiu em paz com a própria consciência.",
+      ref: "Tiago 4, versículo 7",
+      verse: "\"Resisti ao Diabo, e ele fugirá de vós.\""
+    }
+  },
+  {
+    situation: "Alguém te dá um conselho que você não queria ouvir. O que faz?",
+    bad: {
+      label: "Ignoro, porque acho que sei o que estou fazendo",
+      consequence: "Seguir do seu jeito pareceu força — até o resultado provar o contrário.",
+      ref: "Provérbios 16, versículo 18",
+      verse: "\"A soberba precede a ruína, e a altivez do espírito precede a queda.\""
+    },
+    good: {
+      label: "Escuto com humildade, mesmo sendo difícil aceitar",
+      consequence: "Engolir o orgulho doeu, mas te poupou de um erro maior.",
+      ref: "Provérbios 19, versículo 20",
+      verse: "\"Ouve o conselho, e recebe a correção, para que sejas sábio nos teus últimos dias.\""
+    }
+  },
+  {
+    situation: "Você fica sabendo de uma fofoca jugosa sobre um conhecido. O que faz?",
+    bad: {
+      label: "Comento com outras pessoas, afinal é só um comentário",
+      consequence: "A história cresceu a cada boca que passou — inclusive na sua.",
+      ref: "Provérbios 16, versículo 28",
+      verse: "\"O homem perverso levanta contenda; e o difamador separa os maiores amigos.\""
+    },
+    good: {
+      label: "Não repito e mudo de assunto",
+      consequence: "Ninguém percebeu o esforço, mas a confiança das pessoas em você não se abalou.",
+      ref: "Provérbios 17, versículo 9",
+      verse: "\"Quem encobre a transgressão busca o amor, mas quem a repete separa os maiores amigos.\""
+    }
+  },
+  {
+    situation: "Alguém precisa de ajuda financeira, e isso significaria abrir mão de algo que você queria comprar. O que faz?",
+    bad: {
+      label: "Guardo pra mim, afinal trabalhei duro pelo meu dinheiro",
+      consequence: "Você comprou o que queria, mas uma sensação estranha ficou por dias.",
+      ref: "Provérbios 11, versículo 24",
+      verse: "\"Há quem espalhe, e ainda se lhe acrescenta mais; e há quem retenha mais do que é justo, mas fica em necessidade.\""
+    },
+    good: {
+      label: "Ajudo, mesmo que isso signifique esperar mais pra comprar o que eu queria",
+      consequence: "Você esperou mais um pouco pro que queria — mas ganhou algo que dinheiro não compra.",
+      ref: "2 Coríntios 9, versículo 7",
+      verse: "\"Deus ama ao que dá com alegria.\""
+    }
+  },
+  {
+    situation: "Alguém próximo conquista algo que você também queria. O que faz?",
+    bad: {
+      label: "Sinto inveja e me afasto dessa pessoa",
+      consequence: "A distância que você criou não trouxe a conquista que faltava — só trouxe solidão extra.",
+      ref: "Provérbios 14, versículo 30",
+      verse: "\"O coração tranquilo é vida para o corpo, mas a inveja é podridão para os ossos.\""
+    },
+    good: {
+      label: "Fico feliz por essa pessoa e continuo trabalhando no meu próprio caminho",
+      consequence: "A alegria genuína pelo outro não tirou nada de você — e ainda fortaleceu a amizade.",
+      ref: "Romanos 12, versículo 15",
+      verse: "\"Alegrai-vos com os que se alegram.\""
+    }
+  },
+  {
+    situation: "Você já se arrependeu e pediu perdão, mas ainda se pune por dentro. O que faz?",
+    bad: {
+      label: "Continuo me cobrando e relembrando o erro sem parar",
+      consequence: "O perdão que Deus já tinha dado, você mesmo recusava aceitar.",
+      ref: "Romanos 8, versículo 1",
+      verse: "\"Portanto, agora nenhuma condenação há para os que estão em Cristo Jesus.\""
+    },
+    good: {
+      label: "Escolho aceitar que já fui perdoado e sigo em frente",
+      consequence: "Soltar a autocobrança não apagou o passado, mas abriu espaço pro que vem a seguir.",
+      ref: "Filipenses 3, versículo 13",
+      verse: "\"Esquecendo-me das coisas que atrás ficam... prossigo para o alvo.\""
+    }
+  }
+];
+
+let current = null;
+const mainCard = document.getElementById('mainCard');
+const subtext = document.getElementById('subtext');
+
+function pickScenario() {
+  return scenarios[Math.floor(Math.random() * scenarios.length)];
+}
+
+function renderIntro() {
+  mainCard.innerHTML = `
+    <div class="intro">
+      <p>Deus estabeleceu a lei da semeadura: toda ação é uma semente, e o tempo traz de volta o reflexo do que plantamos. Você vai enfrentar uma situação real. A escolha é sua.</p>
+      <button class="start-btn" id="startBtn">Começar</button>
+    </div>
+  `;
+  document.getElementById('startBtn').addEventListener('click', () => {
+    current = pickScenario();
+    renderScenario();
+  });
+}
+
+function renderScenario() {
+  subtext.textContent = "O que você planta hoje, colhe amanhã. Escolha com sinceridade.";
+  mainCard.innerHTML = `
+    <div class="scenario">${current.situation}</div>
+    <div class="choices">
+      <button class="choice-btn bad" data-path="bad">${current.bad.label}</button>
+      <button class="choice-btn good" data-path="good">${current.good.label}</button>
+    </div>
+  `;
+  document.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.addEventListener('click', () => renderResult(btn.dataset.path));
+  });
+}
+
+function renderResult(path) {
+  const outcome = current[path];
+  subtext.textContent = "A colheita da sua semente:";
+  mainCard.innerHTML = `
+    <div class="result-tag ${path}">${path === 'bad' ? 'Semente de espinho' : 'Semente boa'}</div>
+    <div class="consequence">${outcome.consequence}</div>
+    <div class="verse-box">
+      <div class="verse-ref">${outcome.ref}</div>
+      <div class="verse-text">${outcome.verse}</div>
+    </div>
+    <button class="restart-btn" id="restartBtn">Jogar novamente</button>
+    <div class="social-footer">
+      <p>Se inscreve, compartilha e me segue no TikTok. Você não está só!</p>
+      <div class="social-links">
+        <a href="https://www.tiktok.com/@voce_nao_esta_so_30" target="_blank" rel="noopener">TikTok</a>
+        <a href="https://www.youtube.com/channel/UCA74XzN6emDwCPWF-XPDoxw" target="_blank" rel="noopener">YouTube</a>
+        <a href="https://vocenaoestaso-maker.github.io/voce-nao-esta-so/" target="_blank" rel="noopener">Link na Bio</a>
+      </div>
+    </div>
+  `;
+  document.getElementById('restartBtn').addEventListener('click', () => {
+    current = pickScenario();
+    renderScenario();
+  });
+}
+
+renderIntro();
+</script>
+</body>
+</html>
